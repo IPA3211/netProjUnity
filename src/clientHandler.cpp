@@ -19,14 +19,19 @@ void clientHandler(client *c)
 {
     std::cout << "clientHandler : hello" << std::endl;
     char buf[BUF_SIZE];
-    send(c->_sock, "::CON::", 7 , 0);
+    packet t;
     recv(c->_sock, buf, BUF_SIZE, 0);
+
+    strcpy(t.data, buf);
+    t.cmd = 1;
+
+    send(c->_sock, &t, sizeof(packet), 0);
     c->_name = buf;
     std::cout << "clientHandler : " << c-> _name << std::endl;
     packet p;
     while(1){
         int ch = recv(c->_sock, &p, sizeof(p), 0);
-        
+        std::cout << "clientHandler : " << p.cmd << p.data << std::endl;
         if (ch <= 0){
             close(c->_sock);
             c->_name = "";
