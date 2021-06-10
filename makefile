@@ -13,7 +13,7 @@ SRC_DIR = ./src
 OBJ_DIR = ./obj
 
 # 생성하고자 하는 실행 파일 이름
-TARGET = ./bin/server
+TARGET = ./bin/server.out
 
 # Make 할 소스 파일들
 # wildcard 로 SRC_DIR 에서 *.cc 로 된 파일들 목록을 뽑아낸 뒤에
