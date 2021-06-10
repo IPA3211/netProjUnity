@@ -17,19 +17,13 @@ std::vector<std::string> split(std::string in, char delimiter){
 
 void clientHandler(client *c)
 {
+    packet p;
     std::cout << "clientHandler : hello" << std::endl;
-    char buf[BUF_SIZE];
-    packet t;
-    recv(c->_sock, buf, BUF_SIZE, 0);
-
-    strcpy(t.data, buf);
-    t.cmd = 1;
-
-    send(c->_sock, &t, sizeof(packet), 0);
-    c->_name = buf;
+    recv(c->_sock, &p, sizeof(packet), 0);
+    send(c->_sock, &p, sizeof(packet), 0);
+    c->_name = p.data;
     std::cout << "clientHandler 1 : " << c-> _name << std::endl;
 
-    packet p;
     while(1){
         int ch = recv(c->_sock, &p, sizeof(p), 0);
         std::cout << "clientHandler 2 : " << p.cmd <<" "<<p.data << std::endl;
