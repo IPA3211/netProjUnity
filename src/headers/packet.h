@@ -1,3 +1,5 @@
+#pragma once
+
 struct packet
 {
     char cmd;

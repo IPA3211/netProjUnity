@@ -1,52 +1,9 @@
-#pragma once 
+#include "headers/robbyServer.h"
 
-#include "headers.h"
-#include "clientHandler.h"
-#include "roomHandler.h"
-
-#define INVALID_SOCKET (-1)
-#define SOCKET_ERROR (-1)
-
-#define MAX_PLAYER 100
-
-#define CLT_STAT_NOCNT (-1)
-#define CLT_STAT_ONROBBY 0
-#define CLT_STAT_ONROOM 1
-#define CLT_STAT_ONPLAY 2
-#define CLT_STAT_ACCESSING 3
-
-typedef int SOCKET;
-
-class robbyServer
-{
-private:
-	SOCKET sock;
-
-	std::recursive_mutex clientLock;
-	client *clients[MAX_PLAYER];
-
-	std::recursive_mutex roomLock;
-	room *rooms[MAX_PLAYER];
-
-	std::future<void> acceptThread;
-
-	client *acceptClient(SOCKET);
-	void loopAccepter();
-
-public:
-	robbyServer(char *);
-
-	robbyServer &operator=(const robbyServer &);
-
-	void serverStart();
-
-	void openRoom(room);
-	void updateRoom(room);
-	void sendRoomList();
-	void broadcastChat(packet);
-
-	~robbyServer();
-};
+void errorCtrl(std::string str){
+	perror(str.c_str());
+	exit(0);
+}
 
 robbyServer::robbyServer(char *port)
 {
@@ -70,10 +27,16 @@ robbyServer::robbyServer(char *port)
 
 	if(listen(sock, MAX_PLAYER) == SOCKET_ERROR)
 		errorCtrl("listen()");
+
+	for(int i = 0; i < MAX_PLAYER; i++){
+		clients[i] = NULL;
+		rooms[i] = NULL;
+	}
 }
 
 void robbyServer::serverStart(){
-	acceptThread = std::async(loopAccepter, this);
+	acceptThread = std::async(&robbyServer::loopAccepter, this);
+	std::cout << "HELLO :)" << std::endl;
 }
 
 robbyServer::~robbyServer()
@@ -84,8 +47,9 @@ client *robbyServer::acceptClient(SOCKET sock){
 	SOCKET addrSock;
 	sockaddr_in clntAddr = {};
 	socklen_t clntAddrSize;
-	client *newClient = (client *)malloc(sizeof(client));
+	client *newClient = new client();
 
+	std::cout << "acceptClient : hello" << std::endl;
 	clntAddrSize = sizeof(clntAddr);
 	addrSock = accept(sock, (sockaddr *)&clntAddr, &clntAddrSize);
 
@@ -97,19 +61,22 @@ client *robbyServer::acceptClient(SOCKET sock){
 	newClient->_status = CLT_STAT_ACCESSING;
 	newClient->_sock = addrSock;
 
+	std::cout << "acceptClient : good bye" << std::endl;
 	return newClient;
 }
 
 void robbyServer::loopAccepter(){
+	std::cout << "loopAccepter : hello" << std::endl;
 	while(1){
 		client *c ;
+		std::cout << "loopAccepter : waiting..." << std::endl;
 		c = acceptClient(sock);
 
 		for(int i = 0; i < MAX_PLAYER; i++){
 			if(clients[i] == NULL || clients[i]->_status == CLT_STAT_NOCNT){
 				clientLock.lock();
 				
-				if(clients[i]->_status == CLT_STAT_NOCNT)
+				if(clients[i] != NULL)
 					delete(clients[i]);
 
 				clients[i] = c;
@@ -127,9 +94,11 @@ void robbyServer::loopAccepter(){
 			delete(c);
 		}
 	}
+	std::cout << "loopAccepter : goodbye" << std::endl;
 }
 
 void robbyServer::broadcastChat(packet in){
+	std::cout << "broadcastChat : hello" << std::endl;
 	for(int i = 0; i < MAX_PLAYER; i++){
 		clientLock.lock();
 		if(clients[i] != NULL && clients[i]->_status == CLT_STAT_ONROBBY)
@@ -137,15 +106,18 @@ void robbyServer::broadcastChat(packet in){
 
 		clientLock.unlock();
 	}
+	std::cout << "broadcastChat : goodbye" << std::endl;
 }
 
-void robbyServer::openRoom(room in){
+int robbyServer::openRoom(room in){
+	std::cout << "openRoom : hello" << std::endl;
+	in._index = -1;
 	int index = 0;
 	roomLock.lock();
 	for(index = 0; index < MAX_PLAYER; index++){
 		if(rooms[index] == NULL || rooms[index]->_status == ROOM_STAT_ERROR){
 
-			if(rooms[index]->_status == ROOM_STAT_ERROR)
+			if(rooms[index] != NULL)
 				delete(rooms[index]);
 
 			rooms[index] = (room *)malloc(sizeof(room));
@@ -157,18 +129,25 @@ void robbyServer::openRoom(room in){
 		}
 	}
 	roomLock.unlock();
+	std::cout << "openRoom : good bye" << std::endl;
+	return in._index;
 }
 
 void robbyServer::updateRoom(room in){
+	std::cout << "updateRoom : hello" << std::endl;
 	roomLock.lock();
 	*rooms[in._index] = in;
 	roomLock.unlock();
+	std::cout << "updateRoom : good bye" << std::endl;
 }
 
-void robbyServer::sendRoomList(){
+std::vector<packet> robbyServer::getRoomList(){
+	std::cout << "getRoomList : hello" << std::endl;
+	std::vector<packet> p;
 	packet in;
 	in.cmd = CMD_RECV_ROOM;
 	roomLock.lock();
+
 	for(int j = 0; j < MAX_PLAYER; j++){
 		if(rooms[j] != NULL && rooms[j]->_status != ROOM_STAT_ERROR){
 			std::string dd = std::to_string(rooms[j]->_index);
@@ -176,20 +155,11 @@ void robbyServer::sendRoomList(){
 			dd = dd + "\\" + rooms[j]->_name;
 			dd = dd + "\\" + rooms[j]->_status;
 			strcpy(in.data, dd.c_str());
-			
-			for(int i = 0; i < MAX_PLAYER; i++){
-				clientLock.lock();
-				if(clients[i] != NULL && clients[i]->_status == CLT_STAT_ONROBBY)
-					send(clients[i]->_sock, &in, sizeof(in), 0);
-
-				clientLock.unlock();
-			}
+			p.push_back(in);
 		}
 	}
-	roomLock.unlock();
-}
 
-void errorCtrl(std::string str){
-	perror(str.c_str());
-	exit(0);
+	roomLock.unlock();
+	std::cout << "getRoomList : good bye" << std::endl;
+	return p;
 }
