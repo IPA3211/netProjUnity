@@ -27,11 +27,12 @@ void clientHandler(client *c)
 
     send(c->_sock, &t, sizeof(packet), 0);
     c->_name = buf;
-    std::cout << "clientHandler : " << c-> _name << std::endl;
+    std::cout << "clientHandler 1 : " << c-> _name << std::endl;
+
     packet p;
     while(1){
         int ch = recv(c->_sock, &p, sizeof(p), 0);
-        std::cout << "clientHandler : " << p.cmd <<" "<<p.data << std::endl;
+        std::cout << "clientHandler 2 : " << p.cmd <<" "<<p.data << std::endl;
         if (ch <= 0){
             close(c->_sock);
             c->_name = "";
