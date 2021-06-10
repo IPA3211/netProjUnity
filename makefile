@@ -27,7 +27,7 @@ OBJS = $(SRCS:.cpp=.o)
 OBJECTS = $(patsubst %.o,$(OBJ_DIR)/%.o,$(OBJS))
 DEPS = $(OBJECTS:.o=.d)
 
-all: ./bin/server
+all: ./bin/server.out
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	$(CC) $(CXXFLAGS) -c $< -o $@ -MD $(LDFLAGS)
