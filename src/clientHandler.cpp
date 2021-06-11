@@ -25,6 +25,7 @@ void clientHandler(client *c)
     std::cout << "clientHandler 1 : " << c-> _name << std::endl;
 
     while(1){
+        memset(&p, 0, sizeof(p));
         int ch = recv(c->_sock, &p, sizeof(p), 0);
         std::cout << "clientHandler 2 : " << p.cmd <<" "<<p.data << std::endl;
         if (ch <= 0){
@@ -67,6 +68,7 @@ void clientHandler(client *c)
         }
         else if (p.cmd == CMD_ACCE_ROOM){
             auto temp = split(std::string(p.data), '\\');
+            
         }
         else if (p.cmd == CMD_UPDATE_ROOM){
             auto temp = split(std::string(p.data), '\\');

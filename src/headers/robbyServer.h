@@ -37,6 +37,7 @@ public:
 
 	int openRoom(room);
 	void updateRoom(room);
+	packet getRoomInfo(char, std::string);
 	std::vector<packet> getRoomList();
 	void broadcastChat(packet);
 
