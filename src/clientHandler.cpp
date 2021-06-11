@@ -69,7 +69,8 @@ void clientHandler(client *c)
         else if (p.cmd == CMD_ACCE_ROOM){
             std::cout <<"clientHandler : hello" << std::endl;
             auto temp = split(std::string(p.data), '\\');
-            
+            std::cout <<"clientHandler : hello2" << std::endl;
+            std::cout <<"clientHandler : hello2" << std::stoi(temp[0]) << std::endl;
             packet tt = server->getRoomInfo(std::stoi(temp[0]), temp[1]);
             if(temp[2].size() > 0){
                 temp[2] = "";
