@@ -69,6 +69,11 @@ void clientHandler(client *c)
         else if (p.cmd == CMD_ACCE_ROOM){
             auto temp = split(std::string(p.data), '\\');
             
+            packet tt = server->getRoomInfo(std::stoi(temp[0]), temp[1]);
+            if(temp[2].size() > 0){
+                temp[2] = "";
+            }
+            send(c->_sock, &tt, sizeof(tt), 0);
         }
         else if (p.cmd == CMD_UPDATE_ROOM){
             auto temp = split(std::string(p.data), '\\');
