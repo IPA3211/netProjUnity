@@ -142,16 +142,19 @@ void robbyServer::updateRoom(room in){
 }
 
 packet robbyServer::getRoomInfo(char roomNum, std::string pass){
+	std::cout << "getRoomInfo : hello" << std::endl;
 	packet newPack;
 	if(strcmp(rooms[roomNum]->_passwd, pass.c_str()) == 0 && rooms[roomNum]->_status != ROOM_STAT_ERROR){
 		newPack.cmd = CMD_ACCE_ROOM;
 		std::string dd = rooms[roomNum]->_ip;
 		dd = dd + "\\" + rooms[roomNum]->_port;
 		strcpy(newPack.data, dd.c_str());
+		std::cout << "getRoomInfo : correct bye" << std::endl;
 		return newPack;
 	}
 	else{
 		newPack.cmd = CMD_INVAILD_ROOM;
+		std::cout << "getRoomInfo : wrong bye" << std::endl;
 		return newPack;
 	}
 }
