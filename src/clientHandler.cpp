@@ -63,7 +63,6 @@ void clientHandler(client *c)
 
             p.cmd = CMD_RETRUN_ROOM;
             strcpy(p.data, std::to_string(server->openRoom(newRoom)).c_str());
-            temp[3] = "";
             send(c->_sock, &p, sizeof(packet), 0);
         }
         else if (p.cmd == CMD_ACCE_ROOM){
