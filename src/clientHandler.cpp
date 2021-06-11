@@ -55,6 +55,7 @@ void clientHandler(client *c)
             if(temp[3].size() > 0){
                 strcpy(newRoom._passwd, temp[3].c_str());
                 newRoom._isLocked = ROOM_LOCKED;
+                temp[3] = "";
             }
             else
                 newRoom._isLocked = ROOM_UNLOCKED;
