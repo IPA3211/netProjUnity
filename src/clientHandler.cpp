@@ -49,11 +49,15 @@ void clientHandler(client *c)
             strcpy(newRoom._ip, temp[0].c_str());
             strcpy(newRoom._port, temp[1].c_str());
             strcpy(newRoom._name, temp[2].c_str());
-
+            
+            std::cout <<"clientHandler make room: " << temp[3].size() << std::endl;
             if(temp[3].size() > 0){
                 strcpy(newRoom._passwd, temp[3].c_str());
                 newRoom._isLocked = ROOM_LOCKED;
             }
+            else
+                newRoom._isLocked = ROOM_UNLOCKED;
+
             newRoom._status = ROOM_STAT_OPENED;
 
             p.cmd = CMD_RETRUN_ROOM;
