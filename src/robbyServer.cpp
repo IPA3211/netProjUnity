@@ -150,10 +150,14 @@ std::vector<packet> robbyServer::getRoomList(){
 
 	for(int j = 0; j < MAX_PLAYER; j++){
 		if(rooms[j] != NULL && rooms[j]->_status != ROOM_STAT_ERROR){
+			if(rooms[j]->_owner->_status == CLT_STAT_NOCNT) {
+				rooms[j]->_status = ROOM_STAT_ERROR;
+				continue;
+			}
 			std::string dd = std::to_string(rooms[j]->_index);
 			dd = dd + "\\" + std::to_string(rooms[j]->_isLocked);
 			dd = dd + "\\" + rooms[j]->_name;
-			dd = dd + "\\" + rooms[j]->_status;
+			dd = dd + "\\" + std::to_string(rooms[j]->_status);
 			strcpy(in.data, dd.c_str());
 			p.push_back(in);
 		}

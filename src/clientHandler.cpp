@@ -45,6 +45,7 @@ void clientHandler(client *c)
         else if (p.cmd == CMD_MAKE_ROOM){
             auto temp = split(std::string(p.data), '\\');
             room newRoom;
+            newRoom._owner = c;
             strcpy(newRoom._ip, temp[0].c_str());
             strcpy(newRoom._port, temp[1].c_str());
             strcpy(newRoom._name, temp[2].c_str());
@@ -66,6 +67,7 @@ void clientHandler(client *c)
         else if (p.cmd == CMD_UPDATE_ROOM){
             auto temp = split(std::string(p.data), '\\');
             room newRoom;
+            newRoom._owner = c;
             strcpy(newRoom._ip, temp[0].c_str());
             strcpy(newRoom._port, temp[1].c_str());
             strcpy(newRoom._name, temp[2].c_str());

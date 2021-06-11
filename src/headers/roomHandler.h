@@ -1,8 +1,10 @@
 #pragma once
 #include "headers.h"
+#include "clientHandler.h"
 
 struct room
 {
+    client *_owner;
     char _index;
     char _status;
     char _isLocked;
