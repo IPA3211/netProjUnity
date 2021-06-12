@@ -70,13 +70,15 @@ void clientHandler(client *c)
             std::cout <<"clientHandler : hello" << std::endl;
             auto temp = split(std::string(p.data), '\\');
             std::cout <<"clientHandler : hello2" << std::endl;
-            std::cout <<"clientHandler : hello2" << std::stoi(temp[0]) << std::endl;
+            std::cout <<"clientHandler : hello2 " << std::stoi(temp[0]) << std::endl;
             packet tt;
             if(temp[2].size() > 0){
+                std::cout <<"clientHandler : wow" << std::endl;
                 tt = server->getRoomInfo(std::stoi(temp[0]), temp[1]);
                 temp[2] = "";
             }
             else 
+                std::cout <<"clientHandler : vov" << std::endl;
                 tt = server->getRoomInfo(std::stoi(temp[0]), "");
             
             send(c->_sock, &tt, sizeof(tt), 0);
