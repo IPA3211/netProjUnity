@@ -73,7 +73,7 @@ void clientHandler(client *c)
             std::cout <<"clientHandler : hello2 " << std::stoi(temp[0]) << std::endl;
             packet tt;
             if(temp[1].size() > 0){
-                std::cout <<"clientHandler : wow" << std::endl;
+                std::cout <<"clientHandler : wow "<< temp[1].size() << std::endl;
                 tt = server->getRoomInfo(std::stoi(temp[0]), temp[1]);
                 temp[1] = "";
             }
